@@ -1,0 +1,106 @@
+---
+title: CBOR tags for IPv4 and IPv6 addresses and prefixes
+abbrev: CBOR-IP
+docname: draft-richardson-cbor-network-addresses-00
+
+stand_alone: true
+
+ipr: trust200902
+area: Internet
+wg: anima Working Group
+kw: Internet-Draft
+cat: std
+
+pi:    # can use array (if all yes) or hash here
+  toc: yes
+  sortrefs:   # defaults to yes
+  symrefs: yes
+
+author:
+
+
+- ins: M. Richardson
+  name: Michael Richardson
+  org: Sandelman Software Works
+  email: mcr+ietf@sandelman.ca
+
+normative:
+  BCP14: RFC8174
+  RFC8949:
+
+informative:
+
+--- abstract
+
+This document describes two CBOR Tags to be used with IPv4 and IPv6 addresses and prefixes.
+
+--- middle
+
+# Introduction
+
+{{RFC8949}} defines a number of CBOR Tags for common items.
+
+Not included are ones to indicate if the item is an IPv4 or IPv6 address, or if it is an
+address plus prefix length.
+This document defines them.
+
+# Protocol
+
+## IPv4
+
+IANA has allocated tag TBD1 for IPv4 uses.
+
+An IPv4 address is to be encoded as a four-byte bytestring ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD1. Trailing zero octets may be omitted.
+
+An IPv4 prefix, such as 192.0.0.1/24 is to be encoded as a two element array:
+
+~~~~
+    TBD1([ h'C0000001', 24])
+~~~~
+
+## IPv6
+
+IANA has allocated tag TBD2 for IPv6 uses.
+
+An IPv6 address is to be encoded as up to sixteen-byte bytestring ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD2.  Trailing zero octets may be omitted.
+
+An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array:
+
+~~~~
+    TBD2([ h'20010db81234', 24])
+~~~~
+
+# Security Considerations
+
+Identifying which byte sequences in a protocol are addresses may allow an attacker or eavesdropper to better understand what parts of a packet to attack.
+
+Reading the relevant RFC may provide more information, so it would seem that any additional
+security that was provided by not being able to identify what are IP addresses falls into the security by obscurity category.
+
+# IANA Considerations
+
+IANA is asked to allocate two tags from the Specification Required area, in the ("1+1") area.
+
+## TBD1 - IPv4
+
+~~~~
+Data Item: byte-string and array
+Semantics: IPv4 or [IPv4,prefixlen]
+~~~~
+
+## TBD2 - IPv6
+
+~~~~
+Data Item: byte-string and array
+Semantics: IPv6 or [IPv6,prefixlen]
+~~~~
+
+# Acknowledgements
+
+none yet
+
+# Changelog
+
+
+--- back
+

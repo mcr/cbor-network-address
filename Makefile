@@ -1,4 +1,4 @@
-DRAFT:=draft
+DRAFT:=cbor-network-addresses
 VERSION:=$(shell ./getver ${DRAFT}.mkd )
 EXAMPLES=
 
