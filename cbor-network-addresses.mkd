@@ -34,6 +34,8 @@ informative:
 
 This document describes two CBOR Tags to be used with IPv4 and IPv6 addresses and prefixes.
 
+RFC-EDITOR-please remove: This work is tracked at https://github.com/mcr/cbor-network-address.git
+
 --- middle
 
 # Introduction
@@ -45,6 +47,12 @@ address plus prefix length.
 This document defines them.
 
 # Protocol
+
+These tags can applied to byte strings to represent a single address.
+
+When applied to an array, the represent a CIDR-style prefix.
+When a byte string (without prefix) appears in a context where a prefix is expected, then it is to be assumed that all bits are relevant.
+That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
 
 ## IPv4
 
