@@ -1,7 +1,7 @@
 ---
 title: CBOR tags for IPv4 and IPv6 addresses and prefixes
 abbrev: CBOR-IP
-docname: draft-ietf-cbor-network-addresses-00
+docname: draft-ietf-cbor-network-addresses-01
 
 stand_alone: true
 
@@ -94,14 +94,14 @@ IANA is asked to allocate two tags from the Specification Required area of the C
 
 ~~~~
 Data Item: byte-string and array
-Semantics: IPv6 or [IPv6,prefixlen]
+Semantics: IPv6 or [prefixlen,IPv6]
 ~~~~
 
 ## TBD2 - IPv4
 
 ~~~~
 Data Item: byte-string and array
-Semantics: IPv4 or [IPv4,prefixlen]
+Semantics: IPv4 or [prefixlen,IPv4]
 ~~~~
 
 # Acknowledgements
