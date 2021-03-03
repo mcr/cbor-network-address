@@ -58,7 +58,7 @@ That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
 
 IANA has allocated tag TBD1 for IPv6 uses.
 
-An IPv6 address is to be encoded as up to sixteen-byte bytestring ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD1.  Trailing zero octets may be omitted.
+An IPv6 address is to be encoded as up to sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD1.  Trailing zero octets may be omitted.
 
 An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array,
 with the length of the prefix first:
@@ -71,7 +71,7 @@ with the length of the prefix first:
 
 IANA has allocated tag TBD2 for IPv4 uses.
 
-An IPv4 address is to be encoded as a four-byte bytestring ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD2. Trailing zero octets may be omitted.
+An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD2. Trailing zero octets may be omitted.
 
 An IPv4 prefix, such as 192.0.2.1/24 is to be encoded as a two element array, with the length of the prefix first:
 
@@ -93,14 +93,14 @@ IANA is asked to allocate two tags from the Specification Required area of the C
 ## TBD1 - IPv6
 
 ~~~~
-Data Item: byte-string and array
+Data Item: byte string and array
 Semantics: IPv6 or [prefixlen,IPv6]
 ~~~~
 
 ## TBD2 - IPv4
 
 ~~~~
-Data Item: byte-string and array
+Data Item: byte string and array
 Semantics: IPv4 or [prefixlen,IPv4]
 ~~~~
 
