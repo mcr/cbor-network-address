@@ -58,20 +58,20 @@ That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
 
 IANA has allocated tag TBD1 for IPv6 uses.
 
-An IPv6 address is to be encoded as up to sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD1.  Trailing zero octets may be omitted.
+An IPv6 address is to be encoded as up to sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD1.  Trailing zero octets MAY be omitted.
 
 An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array,
 with the length of the prefix first:
 
 ~~~~
-    TBD1([ 48, h'20010db81234'])
+TBD1([ 48, h'20010db81234'])
 ~~~~
 
 ## IPv4
 
 IANA has allocated tag TBD2 for IPv4 uses.
 
-An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD2. Trailing zero octets may be omitted.
+An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD2. Trailing zero octets MAY be omitted.
 
 An IPv4 prefix, such as 192.0.2.1/24 is to be encoded as a two element array, with the length of the prefix first:
 
@@ -79,12 +79,82 @@ An IPv4 prefix, such as 192.0.2.1/24 is to be encoded as a two element array, wi
     TBD2([ 24, h'C0000201'])
 ~~~~
 
+# Encoder Consideration for prefixes
+
+An encoder may omit as many right-hand (trailing) bytes which are all zero as it wishes.
+
+There is no relationship between the number of bytes omitted and the prefix length.
+For instance, the prefix 2001:db8::/64 is optimally encoded as:
+
+~~~~
+TBD1([64, h'20010db8'])
+~~~~
+
+An encoder MUST take care to set all trailing bits to zero.  While decoders are expected to ignore them, such garbage entities could be used as a covert channel, or may reveal the state of what would otherewise be private memory contents.  So for example, 2001:db8:1230::/44
+MUST be encoded as:
+
+~~~~
+TBD1([44, h'20010db81230'])
+~~~~
+
+even though variations like:
+
+~~~~
+TBD1([44, h'20010db81233'])  WRONG
+TBD1([44, h'20010db8123f'])  WRONG
+~~~~
+
+would be parsed in the exact same way.
+
+The same considerations apply to IPv4 prefixes.
+
+# Decoder Considerations for prefixes
+
+A decoder MUST consider all bits to the right of the prefix length to be zero.
+
+A decoder MUST handle the case where a prefix length specifies that more bits are relevant than are actually present in the byte-string.  As a pathological case, ::/128 can be
+encoded as
+
+~~~~
+TBD1([0, h''])
+~~~~
+
+(EDNOTE: do we want to support:
+
+~~~~
+[0]
+~~~~
+
+or
+
+~~~~
+[0, null]
+~~~~
+
+(EDNOTE: what if the array has more than 2 members?  Is this a convert channel, or is this a possible extension point?)
+
+A recommendation for implementation is to first create an array of 16 (or 4) bytes in size, set it all to zero.
+
+Then looking at the length of the included byte-string, and of the
+prefix-length, rounded up to the next multiple of 8, and taking whichever is smaller,
+copy that many bytes from the byte-string into the array.
+
+Finally, looking at the last three bits of the prefix-length (that is, the prefix-length modulo 8), use a static array of 8 values to force the lower bits, non-relevant bits to zero.
+
+A particularly paranoid decoder could examine the lower non-relevant bits to determine if they are non-zero, and reject the prefix.
+This would detect non-compliant encoders, or a possible covert channel.
+
 # Security Considerations
 
 Identifying which byte sequences in a protocol are addresses may allow an attacker or eavesdropper to better understand what parts of a packet to attack.
 
 Reading the relevant RFC may provide more information, so it would seem that any additional
 security that was provided by not being able to identify what are IP addresses falls into the security by obscurity category.
+
+The right-hand bits of the prefix, after the prefix-length, are ignored by this protocol.
+A malicious party could use them to transmit covert data in a way that would not affect the primary use of this encoding.
+Such abuse would be detected by examination of the raw protocol bytes.
+Users of this encoding should be aware of this possibility.
 
 # IANA Considerations
 
@@ -109,6 +179,8 @@ Semantics: IPv4 or [prefixlen,IPv4]
 none yet
 
 # Changelog
+
+* 01 added security considerations about covert channel
 
 
 --- back
