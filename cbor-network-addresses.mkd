@@ -46,6 +46,10 @@ Not included are ones to indicate if the item is an IPv4 or IPv6 address, or if 
 address plus prefix length.
 This document defines them.
 
+# Terminology
+
+{::boilerplate bcp14}
+
 # Protocol
 
 These tags can applied to byte strings to represent a single address.
@@ -101,7 +105,7 @@ even though variations like:
 
 ~~~~
 TBD1([44, h'20010db81233'])  WRONG
-TBD1([44, h'20010db8123f'])  WRONG
+TBD1([45, h'20010db8123f'])  WRONG
 ~~~~
 
 would be parsed in the exact same way.
