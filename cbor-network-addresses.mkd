@@ -85,7 +85,7 @@ Trailing zero octets MUST be omitted.
 For example:
 
 ~~~~
-    TBD2([ 24, h'C0000201'])
+    TBD2([ 24, h'C00002'])
 ~~~~
 
 # Encoder Consideration for prefixes
