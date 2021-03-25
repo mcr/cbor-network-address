@@ -1,7 +1,7 @@
 ---
 title: CBOR tags for IPv4 and IPv6 addresses and prefixes
 abbrev: CBOR-IP
-docname: draft-ietf-cbor-network-addresses-02
+docname: draft-ietf-cbor-network-addresses-03
 
 stand_alone: true
 
@@ -60,9 +60,10 @@ That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
 
 ## IPv6
 
-IANA has allocated tag TBD1 for IPv6 uses.
+IANA has allocated tag 54 for IPv6 uses.
+(Note that this is the ASCII code for '6')
 
-An IPv6 address is to be encoded as a sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD1.
+An IPv6 address is to be encoded as a sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(54).
 
 An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array, with the length of the prefix first.
 Trailing zero octets MUST be omitted.
@@ -70,14 +71,15 @@ Trailing zero octets MUST be omitted.
 For example:
 
 ~~~~
-TBD1([ 48, h'20010db81234'])
+54([ 48, h'20010db81234'])
 ~~~~
 
 ## IPv4
 
-IANA has allocated tag TBD2 for IPv4 uses.
+IANA has allocated tag 54 for IPv4 uses.
+(Note that this is the ASCII code for '4')
 
-An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with tag TBD2.
+An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(52).
 
 An IPv4 prefix, such as 192.0.2.1/24 is to be encoded as a two element array, with the length of the prefix first.
 Trailing zero octets MUST be omitted.
@@ -85,7 +87,7 @@ Trailing zero octets MUST be omitted.
 For example:
 
 ~~~~
-    TBD2([ 24, h'C00002'])
+52([ 24, h'C00002'])
 ~~~~
 
 # Encoder Consideration for prefixes
@@ -96,21 +98,21 @@ There is no relationship between the number of bytes omitted and the prefix leng
 For instance, the prefix 2001:db8::/64 is optimally encoded as:
 
 ~~~~
-TBD1([64, h'20010db8'])
+54([64, h'20010db8'])
 ~~~~
 
 An encoder MUST take care to set all trailing bits to zero.  While decoders are expected to ignore them, such garbage entities could be used as a covert channel, or may reveal the state of what would otherewise be private memory contents.  So for example, 2001:db8:1230::/44
 MUST be encoded as:
 
 ~~~~
-TBD1([44, h'20010db81230'])
+52([44, h'20010db81230'])
 ~~~~
 
 even though variations like:
 
 ~~~~
-TBD1([44, h'20010db81233'])  WRONG
-TBD1([45, h'20010db8123f'])  WRONG
+54([44, h'20010db81233'])  WRONG
+54([45, h'20010db8123f'])  WRONG
 ~~~~
 
 would be parsed in the exact same way.
@@ -125,22 +127,8 @@ A decoder MUST handle the case where a prefix length specifies that more bits ar
 encoded as
 
 ~~~~
-TBD1([0, h''])
+54([128, h''])
 ~~~~
-
-(EDNOTE: do we want to support:
-
-~~~~
-[0]
-~~~~
-
-or
-
-~~~~
-[0, null]
-~~~~
-
-(EDNOTE: what if the array has more than 2 members?  Is this a convert channel, or is this a possible extension point?)
 
 A recommendation for implementation is to first create an array of 16 (or 4) bytes in size, set it all to zero.
 
@@ -169,14 +157,14 @@ Users of this encoding should be aware of this possibility.
 
 IANA is asked to allocate two tags from the Specification Required area of the Concise Binary Object Representation (CBOR) Tags, in the ("1+1") area.
 
-## TBD1 - IPv6
+## Tag 54 - IPv6
 
 ~~~~
 Data Item: byte string and array
 Semantics: IPv6 or [prefixlen,IPv6]
 ~~~~
 
-## TBD2 - IPv4
+## Tag 52 - IPv4
 
 ~~~~
 Data Item: byte string and array
