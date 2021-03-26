@@ -10,6 +10,7 @@ area: Internet
 wg: CBOR Working Group
 kw: Internet-Draft
 cat: std
+consensus: true
 
 pi:    # can use array (if all yes) or hash here
   toc: yes
@@ -25,7 +26,6 @@ author:
   email: mcr+ietf@sandelman.ca
 
 normative:
-  BCP14: RFC8174
   RFC8949:
 
 informative:
@@ -34,7 +34,7 @@ informative:
 
 This document describes two CBOR Tags to be used with IPv4 and IPv6 addresses and prefixes.
 
-RFC-EDITOR-please remove: This work is tracked at https://github.com/mcr/cbor-network-address.git
+RFC-EDITOR-please remove: This work is tracked at https://github.com/cbor-wg/cbor-network-address
 
 --- middle
 
@@ -61,12 +61,12 @@ That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
 ## IPv6
 
 IANA has allocated tag 54 for IPv6 uses.
-(Note that this is the ASCII code for '6')
+(Note that this is the ASCII code for '6'.)
 
 An IPv6 address is to be encoded as a sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(54).
 
 An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array, with the length of the prefix first.
-Trailing zero octets MUST be omitted.
+Trailing zero bytes MUST be omitted.
 
 For example:
 
@@ -77,12 +77,12 @@ For example:
 ## IPv4
 
 IANA has allocated tag 54 for IPv4 uses.
-(Note that this is the ASCII code for '4')
+(Note that this is the ASCII code for '4'.)
 
 An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(52).
 
 An IPv4 prefix, such as 192.0.2.1/24 is to be encoded as a two element array, with the length of the prefix first.
-Trailing zero octets MUST be omitted.
+Trailing zero bytes MUST be omitted.
 
 For example:
 
@@ -155,30 +155,33 @@ Users of this encoding should be aware of this possibility.
 
 # IANA Considerations
 
-IANA is asked to allocate two tags from the Specification Required area of the Concise Binary Object Representation (CBOR) Tags, in the ("1+1") area.
+IANA has allocated two tags from the Specification Required area of the Concise Binary Object Representation (CBOR) Tags:
 
 ## Tag 54 - IPv6
 
 ~~~~
-Data Item: byte string and array
+Data Item: byte string or array
 Semantics: IPv6 or [prefixlen,IPv6]
 ~~~~
 
 ## Tag 52 - IPv4
 
 ~~~~
-Data Item: byte string and array
+Data Item: byte string or array
 Semantics: IPv4 or [prefixlen,IPv4]
 ~~~~
-
-# Acknowledgements
-
-none yet
-
-# Changelog
-
-* 01 added security considerations about covert channel
 
 
 --- back
 
+# Changelog
+{: removeinrfc="true"}
+
+* 03
+* 02
+* 01 added security considerations about covert channel
+
+# Acknowledgements
+{: numbered="false"}
+
+none yet
