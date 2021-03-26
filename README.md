@@ -1,14 +1,10 @@
-(This is wrong)
+# CBOR WG -- network address tags
 
-# ANIMA operational considerations for BRSKI Registrar
+This repository contains a protocol specification for encoding IPv6 and IPv4 address and prefix objects in CBOR.
+These are described by tag 54 and tag 52.
 
-The ANIMA WG Bootstrapping Remote Secure Key Infrastructure (BRSKI)
-protocol involves three parties: Pledge (device), Registrar and
-Manufacturer Authorized Signing Authority (MASA).
 
-This repository contains operational considerations for the Registrar
-function.  It is a candidate document for the ANIMA WG
-http://datatracker.ietf.org/wg/anima 
+
 
 
 
