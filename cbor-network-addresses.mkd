@@ -1,7 +1,7 @@
 ---
 title: CBOR tags for IPv4 and IPv6 addresses and prefixes
 abbrev: CBOR-IP
-docname: draft-ietf-cbor-network-addresses-03
+docname: draft-ietf-cbor-network-addresses-04
 
 stand_alone: true
 
