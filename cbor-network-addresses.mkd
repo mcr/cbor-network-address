@@ -42,9 +42,18 @@ RFC-EDITOR-please remove: This work is tracked at https://github.com/cbor-wg/cbo
 
 {{RFC8949}} defines a number of CBOR Tags for common items.
 
-Not included are ones to indicate if the item is an IPv4 or IPv6 address, or if it is an
-address plus prefix length.
-This document defines them.
+Tag 260 and tag 261 was later defined through IANA.
+These tags cover addresses (260), and prefixes (261).
+Tag 260 distinguishes between IPv4, IPv6 and Ethernet through the length of the byte string only.
+Tag 261 was not documented well enough to be used.
+
+The author wanted an explicit indication of IPv4 or IPv6, and the possibility to omit trailing zeroes.
+
+This document provides a format for IPv6 and IPv4 addresses and prefixes.
+Prefixes may omit trailing zeroes in the address.
+Due to the complexity of testing the value of omitting trailing zeros for addresses was considered non-essential and support for that was removed in this specification.
+
+This document does not deal with 6 or 8-byte ethernet addressees.
 
 # Terminology
 
