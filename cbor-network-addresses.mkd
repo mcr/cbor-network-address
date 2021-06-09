@@ -85,7 +85,7 @@ For example:
 
 ## IPv4
 
-IANA has allocated tag 54 for IPv4 uses.
+IANA has allocated tag 52 for IPv4 uses.
 (Note that this is the ASCII code for '4'.)
 
 An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(52).
