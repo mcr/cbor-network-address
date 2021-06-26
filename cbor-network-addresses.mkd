@@ -50,11 +50,12 @@ Tag 261 was not documented well enough to be used.
 
 The author wanted an explicit indication of IPv4 or IPv6, and the possibility to omit trailing zeroes.
 
-This document provides a format for IPv6 and IPv4 addresses and prefixes.
-Prefixes may omit trailing zeroes in the address.
+This document provides a format for IPv6 and IPv4 addresses, prefixes,
+and addresses with prefixes.
+Prefixes MUST omit trailing zeroes in the address.
 Due to the complexity of testing the value of omitting trailing zeros for addresses was considered non-essential and support for that was removed in this specification.
 
-This document does not deal with 6 or 8-byte ethernet addressees.
+This document does not deal with 6 or 8-byte Ethernet addressees.
 
 # Terminology
 
@@ -64,16 +65,23 @@ This document does not deal with 6 or 8-byte ethernet addressees.
 
 These tags can applied to byte strings to represent a single address.
 
-When applied to an array, the represent a CIDR-style prefix.
+When applied to an array that starts with a number, they represent a
+CIDR-style prefix of that length.
 When a byte string (without prefix) appears in a context where a prefix is expected, then it is to be assumed that all bits are relevant.
 That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
+
+When applied to an array that starts with a byte string, that stands
+for an IP address, followed by the bit length of a prefix built out of
+the first `length` bits of the address.
+
 
 ## IPv6
 
 IANA has allocated tag 54 for IPv6 uses.
 (Note that this is the ASCII code for '6'.)
 
-An IPv6 address is to be encoded as a sixteen-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(54).
+An IPv6 address is to be encoded as a sixteen-byte byte string
+({{Section 3.1 of RFC8949}}, major type 2), enclosed in Tag number 54.
 
 An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array, with the length of the prefix first.
 Trailing zero bytes MUST be omitted.
@@ -84,14 +92,30 @@ For example:
 54([ 48, h'20010db81234'])
 ~~~~
 
+An IPv6 address combined with a prefix length, such as being used for
+configuring an interface, is to be encoded as a two element array,
+with the (full-length) IPv6 address first and the length of the
+associated network the prefix next.
+
+
+For example:
+
+~~~~
+54([h'20010db81234DEEDBEEFCAFEFACEFEED', 56])
+~~~~
+
+Note that the address-with-prefix form can be reliably distinguished
+from the prefix form only in the sequence of the array elements.
+
 ## IPv4
 
 IANA has allocated tag 52 for IPv4 uses.
 (Note that this is the ASCII code for '4'.)
 
-An IPv4 address is to be encoded as a four-byte byte string ({{RFC8949}} section, 3.1, major type 2), prefixed with Tag(52).
+An IPv4 address is to be encoded as a four-byte byte string
+({{Section 3.1 of RFC8949}}, major type 2), enclosed in Tag number 52.
 
-An IPv4 prefix, such as 192.0.2.1/24 is to be encoded as a two element array, with the length of the prefix first.
+An IPv4 prefix, such as 192.0.2.0/24 is to be encoded as a two element array, with the length of the prefix first.
 Trailing zero bytes MUST be omitted.
 
 For example:
@@ -99,6 +123,23 @@ For example:
 ~~~~
 52([ 24, h'C00002'])
 ~~~~
+
+
+An IPv4 address combined with a prefix length, such as being used for
+configuring an interface, is to be encoded as a two element array,
+with the (full-length) IPv4 address first and the length of the
+associated network the prefix next.
+
+For example,  192.0.2.1/24 is to be encoded as a two element array,
+with the length of the prefix (implied 192.0.2.0/24) last.
+
+~~~~
+52([ h'C0000201', 24])
+~~~~
+
+Note that the address-with-prefix form can be reliably distinguished
+from the prefix form only in the sequence of the array elements.
+
 
 # Encoder Consideration for prefixes
 
@@ -158,22 +199,30 @@ are recommended:
 
 ~~~~ cddl
 
-ip-address-or-prefix = ipv6-address-or-prefix / ipv4-address-or-prefix
+ip-address-or-prefix = ipv6-address-or-prefix /
+                       ipv4-address-or-prefix
 
-ipv6-address-or-prefix = #6.54(ipv6-address / ipv6-prefix)
-ipv4-address-or-prefix = #6.52(ipv4-address / ipv4-prefix)
+ipv6-address-or-prefix = #6.54(ipv6-address /
+                               ipv6-address-with-prefix /
+                               ipv6-prefix)
+ipv4-address-or-prefix = #6.52(ipv4-address /
+                               ipv4-address-with-prefix /
+                               ipv4-prefix)
 
-ipv6-prefix = [ipv6-prefix-length, ipv6-prefix-bytes]
-ipv4-prefix = [ipv4-prefix-length, ipv4-prefix-bytes]
+ipv6-address = bytes .size 16
+ipv4-address = bytes .size 4
+
+ipv6-address-with-prefix = [ipv6-address, ipv6-prefix-length]
+ipv4-address-with-prefix = [ipv4-address, ipv4-prefix-length]
 
 ipv6-prefix-length = 0..128
 ipv4-prefix-length = 0..32
 
+ipv6-prefix = [ipv6-prefix-length, ipv6-prefix-bytes]
+ipv4-prefix = [ipv4-prefix-length, ipv4-prefix-bytes]
+
 ipv6-prefix-bytes = bytes .size (uint .le 16)
 ipv4-prefix-bytes = bytes .size (uint .le 4)
-
-ipv6-address = bytes .size 16
-ipv4-address = bytes .size 4
 
 ~~~~
 {: #cddl-types title=""}
@@ -198,14 +247,14 @@ IANA has allocated two tags from the Specification Required area of the Concise 
 
 ~~~~
 Data Item: byte string or array
-Semantics: IPv6 or [prefixlen,IPv6]
+Semantics: IPv6, [prefixlen,IPv6], [IPv6,prefixpart]
 ~~~~
 
 ## Tag 52 - IPv4
 
 ~~~~
 Data Item: byte string or array
-Semantics: IPv4 or [prefixlen,IPv4]
+Semantics: IPv4, [prefixlen,IPv4], [IPv4,prefixpart]
 ~~~~
 
 
