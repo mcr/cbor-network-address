@@ -27,6 +27,7 @@ author:
 
 normative:
   RFC8949:
+  RFC8610: cddl
 
 informative:
 
@@ -149,6 +150,33 @@ Finally, looking at the last three bits of the prefix-length (that is, the prefi
 
 A particularly paranoid decoder could examine the lower non-relevant bits to determine if they are non-zero, and reject the prefix.
 This would detect non-compliant encoders, or a possible covert channel.
+
+# CDDL
+
+For use with CDDL {{-cddl}}, the typenames defined in {{cddl-types}}
+are recommended:
+
+~~~~ cddl
+
+ip-address-or-prefix = ipv6-address-or-prefix / ipv4-address-or-prefix
+
+ipv6-address-or-prefix = #6.54(ipv6-address / ipv6-prefix)
+ipv4-address-or-prefix = #6.52(ipv4-address / ipv4-prefix)
+
+ipv6-prefix = [ipv6-prefix-length, ipv6-prefix-bytes]
+ipv4-prefix = [ipv4-prefix-length, ipv4-prefix-bytes]
+
+ipv6-prefix-length = 0..128
+ipv4-prefix-length = 0..32
+
+ipv6-prefix-bytes = bytes .size (uint .le 16)
+ipv4-prefix-bytes = bytes .size (uint .le 4)
+
+ipv6-address = bytes .size 16
+ipv4-address = bytes .size 4
+
+~~~~
+{: #cddl-types title=""}
 
 # Security Considerations
 
