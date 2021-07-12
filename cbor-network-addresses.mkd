@@ -25,6 +25,11 @@ author:
   org: Sandelman Software Works
   email: mcr+ietf@sandelman.ca
 
+- name: Carsten Bormann
+  org: Universität Bremen TZI
+  email: cabo@tzi.org
+  country: Germany
+
 normative:
   RFC8949:
   RFC8610: cddl
