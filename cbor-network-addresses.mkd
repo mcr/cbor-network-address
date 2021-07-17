@@ -38,9 +38,11 @@ informative:
 
 --- abstract
 
-This document describes two CBOR Tags to be used with IPv4 and IPv6 addresses and prefixes.
+This specification describes two CBOR Tags to be used with IPv4 and IPv6 addresses and prefixes.
 
-RFC-EDITOR-please remove: This work is tracked at https://github.com/cbor-wg/cbor-network-address
+[^track]
+
+[^track]: RFC-EDITOR-please-remove: This work is tracked at https://github.com/cbor-wg/cbor-network-address
 
 --- middle
 
@@ -48,19 +50,19 @@ RFC-EDITOR-please remove: This work is tracked at https://github.com/cbor-wg/cbo
 
 {{RFC8949}} defines a number of CBOR Tags for common items.
 
-Tag 260 and tag 261 was later defined through IANA.
+Tag 260 and tag 261 were later defined through IANA.
 These tags cover addresses (260), and prefixes (261).
 Tag 260 distinguishes between IPv4, IPv6 and Ethernet through the length of the byte string only.
 Tag 261 was not documented well enough to be used.
 
 The present specification achieves an explicit indication of IPv4 or IPv6, and the possibility to omit trailing zeroes.
 
-This document provides a format for IPv6 and IPv4 addresses, prefixes,
+This specification provides a format for IPv6 and IPv4 addresses, prefixes,
 and addresses with prefixes.
-Prefixes MUST omit trailing zeroes in the address.
-Due to the complexity of testing the value of omitting trailing zeros for addresses was considered non-essential and support for that was removed in this specification.
+Prefixes omit trailing zeroes in the address.
+(Due to the complexity of testing, the value of omitting trailing zeros for addresses was considered non-essential and support for that was removed in this specification.)
 
-This document does not deal with 6 or 8-byte Ethernet addressees.
+This specification does not deal with 6 or 8-byte Ethernet addresses.
 
 # Terminology
 
@@ -68,7 +70,7 @@ This document does not deal with 6 or 8-byte Ethernet addressees.
 
 # Protocol
 
-These tags can applied to byte strings to represent a single address.
+These tags can be applied to byte strings to represent a single address.
 
 When applied to an array that starts with a number, they represent a
 CIDR-style prefix of that length.
@@ -157,7 +159,7 @@ For instance, the prefix 2001:db8::/64 is optimally encoded as:
 54([64, h'20010db8'])
 ~~~~
 
-An encoder MUST take care to set all trailing bits to zero.  While decoders are expected to ignore them, such garbage entities could be used as a covert channel, or may reveal the state of what would otherewise be private memory contents.  So for example, 2001:db8:1230::/44
+An encoder MUST take care to set all trailing bits to zero.  While decoders are expected to ignore them, such garbage entities could be used as a covert channel, or may reveal the state of what would otherwise be private memory contents.  So for example, 2001:db8:1230::/44
 MUST be encoded as:
 
 ~~~~
@@ -186,16 +188,34 @@ encoded as
 54([128, h''])
 ~~~~
 
-A recommendation for implementation is to first create an array of 16 (or 4) bytes in size, set it all to zero.
+A recommendation for implementations is to first create an array of 16 (or 4) zero bytes.
 
-Then looking at the length of the included byte-string, and of the
-prefix-length, rounded up to the next multiple of 8, and taking whichever is smaller,
-copy that many bytes from the byte-string into the array.
+Then taking whichever is smaller between (a) the length of the
+included byte-string, and (b) the number of bytes covered by the
+prefix-length rounded up to the next multiple of 8: fail if that
+number is greater than 16 (or 4), and then copy that many bytes from
+the byte-string into the array.
 
-Finally, looking at the last three bits of the prefix-length (that is, the prefix-length modulo 8), use a static array of 8 values to force the lower bits, non-relevant bits to zero.
+Finally, looking at the last three bits of the prefix-length in bits
+(that is, the prefix-length modulo 8), use a static array of 8 values
+to force the lower, non-relevant bits to zero, or simply:
+
+~~~ c
+unused_bits = (-prefix_length_in_bits) & 7;
+if (length_in_bytes > 0)
+  address_bytes[length_in_bytes - 1] &= (0xFF << unused_bits);
+~~~
 
 A particularly paranoid decoder could examine the lower non-relevant bits to determine if they are non-zero, and reject the prefix.
 This would detect non-compliant encoders, or a possible covert channel.
+
+~~~ c
+if (length_in_bytes > 0 &&
+    (address_bytes[length_in_bytes - 1] & ~(0xFF << unused_bits))
+    != 0)
+  fail();
+~~~
+
 
 # CDDL
 
