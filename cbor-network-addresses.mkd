@@ -70,16 +70,31 @@ This specification does not deal with 6 or 8-byte Ethernet addresses.
 
 # Protocol
 
+## Three Forms
+
+### Addresses
+
 These tags can be applied to byte strings to represent a single address.
+
+This form is called the Address Format.
+
+### Prefixes
 
 When applied to an array that starts with a number, they represent a
 CIDR-style prefix of that length.
-When a byte string (without prefix) appears in a context where a prefix is expected, then it is to be assumed that all bits are relevant.
+
+When an Address (byte string), i.e., without prefix) appears in a context where a prefix is expected, then it is to be assumed that all bits are relevant.
 That is, for IPv4, a /32 is implied, and for IPv6, a /128 is implied.
+
+This form is called the Prefix Format.
+
+### Interface Definition
 
 When applied to an array that starts with a byte string, that stands
 for an IP address, followed by the bit length of a prefix built out of
 the first `length` bits of the address.
+
+This form is called the Interface Format, or Interface Definition.
 
 
 ## IPv6
