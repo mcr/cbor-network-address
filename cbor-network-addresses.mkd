@@ -49,16 +49,13 @@ This specification describes two CBOR Tags to be used with IPv4 and IPv6 address
 # Introduction
 
 {{RFC8949}} defines a number of CBOR Tags for common items.
-
-Tag 260 and tag 261 were later defined through IANA.
+Tags 260 and 261 were later defined through IANA.
 These tags cover addresses (260), and prefixes (261).
 Tag 260 distinguishes between IPv4, IPv6 and Ethernet through the length of the byte string only.
 Tag 261 was not documented well enough to be used.
 
-The present specification achieves an explicit indication of IPv4 or IPv6, and the possibility to omit trailing zeroes.
-
 This specification provides a format for IPv6 and IPv4 addresses, prefixes,
-and addresses with prefixes.
+and addresses with prefixes, achieving an explicit indication of IPv4 or IPv6.
 Prefixes omit trailing zeroes in the address.
 (Due to the complexity of testing, the value of omitting trailing zeros for addresses was considered non-essential and support for that was removed in this specification.)
 
@@ -90,13 +87,19 @@ IANA has allocated tag 54 for IPv6 uses.
 An IPv6 address is to be encoded as a sixteen-byte byte string
 ({{Section 3.1 of RFC8949}}, major type 2), enclosed in Tag number 54.
 
+For example:
+
+~~~~
+54(h'20010db81234DEEDBEEFCAFEFACEFEED')
+~~~~
+
 An IPv6 prefix, such as 2001:db8:1234::/48 is to be encoded as a two element array, with the length of the prefix first.
 Trailing zero bytes MUST be omitted.
 
 For example:
 
 ~~~~
-54([ 48, h'20010db81234'])
+54([48, h'20010db81234'])
 ~~~~
 
 An IPv6 address combined with a prefix length, such as being used for
@@ -122,13 +125,20 @@ IANA has allocated tag 52 for IPv4 uses.
 An IPv4 address is to be encoded as a four-byte byte string
 ({{Section 3.1 of RFC8949}}, major type 2), enclosed in Tag number 52.
 
+
+For example:
+
+~~~~
+52(h'C0000201')
+~~~~
+
 An IPv4 prefix, such as 192.0.2.0/24 is to be encoded as a two element array, with the length of the prefix first.
 Trailing zero bytes MUST be omitted.
 
 For example:
 
 ~~~~
-52([ 24, h'C00002'])
+52([24, h'C00002'])
 ~~~~
 
 
@@ -141,25 +151,27 @@ For example,  192.0.2.1/24 is to be encoded as a two element array,
 with the length of the prefix (implied 192.0.2.0/24) last.
 
 ~~~~
-52([ h'C0000201', 24])
+52([h'C0000201', 24])
 ~~~~
 
 Note that the address-with-prefix form can be reliably distinguished
 from the prefix form only in the sequence of the array elements.
 
 
-# Encoder Consideration for prefixes
+# Encoder Considerations for Prefixes
 
-An encoder may omit as many right-hand (trailing) bytes which are all zero as it wishes.
+For the byte strings used in representing prefixes,
+an encoder MUST omit any right-aligned (trailing) sequence of bytes that are all zero.
 
 There is no relationship between the number of bytes omitted and the prefix length.
-For instance, the prefix 2001:db8::/64 is optimally encoded as:
+For instance, the prefix 2001:db8::/64 is encoded as:
 
 ~~~~
 54([64, h'20010db8'])
 ~~~~
 
-An encoder MUST take care to set all trailing bits to zero.  While decoders are expected to ignore them, such garbage entities could be used as a covert channel, or may reveal the state of what would otherwise be private memory contents.  So for example, 2001:db8:1230::/44
+An encoder MUST take care to set all trailing bits in the final byte
+to zero, if any.  While decoders are expected to ignore them, such garbage entities could be used as a covert channel, or may reveal the state of what would otherwise be private memory contents.  So for example, `2001:db8:1230::/44`
 MUST be encoded as:
 
 ~~~~
@@ -177,7 +189,7 @@ would be parsed in the exact same way.
 
 The same considerations apply to IPv4 prefixes.
 
-# Decoder Considerations for prefixes
+# Decoder Considerations for Prefixes
 
 A decoder MUST consider all bits to the right of the prefix length to be zero.
 
@@ -255,9 +267,7 @@ ipv4-prefix-bytes = bytes .size (uint .le 4)
 # Security Considerations
 
 Identifying which byte sequences in a protocol are addresses may allow an attacker or eavesdropper to better understand what parts of a packet to attack.
-
-Reading the relevant RFC may provide more information, so it would seem that any additional
-security that was provided by not being able to identify what are IP addresses falls into the security by obscurity category.
+That information, however, is likely to be found in the relevant RFCs anyway, so this is not a significant exposure.
 
 The right-hand bits of the prefix, after the prefix-length, are ignored by this protocol.
 A malicious party could use them to transmit covert data in a way that would not affect the primary use of this encoding.
